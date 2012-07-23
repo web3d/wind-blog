@@ -1,0 +1,7 @@
+<!--#if($post):#-->
+<h2>{$post['title']}</h2>
+<div>{$post['content']}</div>
+<div>Posted at {@date('Y/m/d H:i:s', $post['update_time'])}</div>
+<!--#else:#-->
+无此日志！
+<!--#endif;#-->
