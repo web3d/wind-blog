@@ -1,6 +1,8 @@
 <?php
 /**
  * 数据库模型类
+ *
+ * 对于模型类的功能定位还不清晰，主要是考虑主要用于小项目还是大项目
  */
  
 class Model extends WindEnableValidateModule{

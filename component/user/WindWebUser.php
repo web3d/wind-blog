@@ -186,9 +186,9 @@ class WindWebUser extends WindModule implements IWebUser
 	 * This method overrides the parent implementation by starting session,
 	 * performing cookie-based authentication if enabled, and updating the flash variables.
 	 */
-	public function init()
+	public function __construct()
 	{
-		parent::init();
+		//parent::__construct();
 		//Yii::app()->getSession()->open();
 		if($this->getIsGuest() && $this->allowAutoLogin)
 			$this->restoreFromCookie();
@@ -219,17 +219,20 @@ class WindWebUser extends WindModule implements IWebUser
 	 */
 	public function login($identity,$duration=0)
 	{
+        //exit(var_dump($identity->getId()));
+
 		$id = $identity->getId();
+        //exit($id);
 		$states=$identity->getPersistentStates();
-		if($this->beforeLogin($id,$states,false))
+		if($this->beforeLogin($id, $states, false))
 		{
-			$this->changeIdentity($id,$identity->getName(),$states);
+			$this->changeIdentity($id,$identity->getName(), $states);
 
 			if($duration>0)
 			{
-				if($this->allowAutoLogin)
-					$this->saveToCookie($duration);
-				else
+				//if($this->allowAutoLogin)
+					//$this->saveToCookie($duration);
+				//else
 					throw new WindException(get_class($this) . '.allowAutoLogin must be set true '
                             . 'in order to use cookie-based authentication.');
 			}
@@ -350,22 +353,22 @@ class WindWebUser extends WindModule implements IWebUser
 	public function loginRequired()
 	{
 		$app =  Wind::getApp();//Yii::app();
-		$request=$app->getRequest();
+		$request = $app->getRequest();
 
 		if(!$request->getIsAjaxRequest())
-			$this->setReturnUrl($request->getUrl());
+			$this->setReturnUrl($request->getRequestUri());
 		elseif(isset($this->loginRequiredAjaxResponse))
 		{
 			echo $this->loginRequiredAjaxResponse;
-			Yii::app()->end();
+			exit();
 		}
 
-		if(($url=$this->loginUrl)!==null)
+		if(($url = $this->loginUrl) !== null)
 		{
 			if(is_array($url))
 			{
-				$route=isset($url[0]) ? $url[0] : $app->defaultController;
-				$url=$app->createUrl($route,array_splice($url,1));
+				$route = isset($url[0]) ? $url[0] : '';//TODO: 默认控制器 $app->defaultController
+				$url = WindUrlHelper::createUrl($route,array_splice($url,1));
 			}
 			$request->redirect($url);
 		}
@@ -433,9 +436,9 @@ class WindWebUser extends WindModule implements IWebUser
 	 */
 	protected function restoreFromCookie()
 	{
-		$app=Yii::app();
-		$request=$app->getRequest();
-		$cookie=$request->getCookies()->itemAt($this->getStateKeyPrefix());
+		$app = Wind::getApp();
+		$request = $app->getRequest();
+		$cookie = $request->getCookie()->itemAt($this->getStateKeyPrefix());
 		if($cookie && !empty($cookie->value) && ($data=$app->getSecurityManager()->validateData($cookie->value))!==false)
 		{
 			$data=@unserialize($data);
@@ -448,7 +451,7 @@ class WindWebUser extends WindModule implements IWebUser
 					if($this->autoRenewCookie)
 					{
 						$cookie->expire=time()+$duration;
-						$request->getCookies()->add($cookie->name,$cookie);
+						$request->getCookie()->add($cookie->name,$cookie);
 					}
 					$this->afterLogin(true);
 				}
@@ -464,8 +467,8 @@ class WindWebUser extends WindModule implements IWebUser
 	 */
 	protected function renewCookie()
 	{
-		$request=Yii::app()->getRequest();
-		$cookies=$request->getCookies();
+		$request = Wind::getApp()->getRequest();
+		$cookies=$request->getCookie();
 		$cookie=$cookies->itemAt($this->getStateKeyPrefix());
 		if($cookie && !empty($cookie->value) && ($data=Yii::app()->getSecurityManager()->validateData($cookie->value))!==false)
 		{
@@ -509,6 +512,7 @@ class WindWebUser extends WindModule implements IWebUser
 	protected function createIdentityCookie($name)
 	{
 		$cookie=new CHttpCookie($name,'');
+
 		if(is_array($this->identityCookie))
 		{
 			foreach($this->identityCookie as $name=>$value)
@@ -525,7 +529,7 @@ class WindWebUser extends WindModule implements IWebUser
 		if($this->_keyPrefix!==null)
 			return $this->_keyPrefix;
 		else
-			return $this->_keyPrefix=md5('Yii.'.get_class($this).'.'.Yii::app()->getId());
+			return $this->_keyPrefix=md5(get_class($this));
 	}
 
 	/**
@@ -573,7 +577,7 @@ class WindWebUser extends WindModule implements IWebUser
 	 */
 	public function setState($key,$value,$defaultValue=null)
 	{
-		$key=$this->getStateKeyPrefix().$key;
+		$key = $this->getStateKeyPrefix() . $key;
 		if($value===$defaultValue)
 			unset($_SESSION[$key]);
 		else
@@ -693,7 +697,7 @@ class WindWebUser extends WindModule implements IWebUser
 	 */
 	protected function changeIdentity($id,$name,$states)
 	{
-		Yii::app()->getSession()->regenerateID();
+		//Yii::app()->getSession()->regenerateID();
 		$this->setId($id);
 		$this->setName($name);
 		$this->loadIdentityStates($states);

@@ -26,7 +26,7 @@
  * @since 1.0
  */
 
-Wind::import('admin.component.user.WindBaseUserIdentity');
+Wind::import('component.user.WindBaseUserIdentity');
 
 class WindUserIdentity extends WindBaseUserIdentity
 {

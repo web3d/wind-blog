@@ -17,8 +17,8 @@ class Controller extends WindController {
 		parent::beforeAction($handlerAdapter);
 		$this->setLayout('layout');
 		$this->setOutput('utf8', 'charset');
-		$this->setGlobal($this->getRequest()->getBaseUrl(true) . '/template/images', 'images');
-		$this->setGlobal($this->getRequest()->getBaseUrl(true) . '/template/images', 'css');
+		$this->setGlobal($this->getRequest()->getBaseUrl(true) . '/static/images', 'images');
+		$this->setGlobal($this->getRequest()->getBaseUrl(true) . '/static/images', 'css');
 	}
 
 	/**
