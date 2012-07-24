@@ -19,8 +19,16 @@ class AdminController extends WindController {
 		parent::beforeAction($handlerAdapter);
 
         $session = $this->getSession();
-        //$session->set('namexxtt', 'test2233');    //等同：$_SESSION['name'] = 'test';
+        $session->set('namexxtt', 'test2233');    //等同：$_SESSION['name'] = 'test';
         echo $session->get('namexxtt');       //等同：echo $_SESSION['name'];
+
+        $user = $this->getUser();
+
+        Wind::import('component.UserIdentity');
+        $user_identity = new UserIdentity('jimmy', '123456');
+
+        var_dump($user->login($user_identity));
+
 
         $this->checkRights($handlerAdapter, '');
         //TODO:后台用户权限检测
@@ -128,5 +136,9 @@ class AdminController extends WindController {
 
     public function getSession(){
         return Wind::getApp()->getComponent('session');
+    }
+
+    public function getUser(){
+        return Wind::getApp()->getComponent('user');
     }
 }
